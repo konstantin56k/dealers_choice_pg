@@ -1,0 +1,12 @@
+body {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+li {
+    margin-bottom: 1rem;
+}
+
+a {
+    text-decoration: none;
+    color: rgb(0, 102, 71);
+}
