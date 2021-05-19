@@ -13,7 +13,7 @@ app.get('/', async(req, res, next) => {
         res.send(`
         <html>
             <head>
-            <title>Batteries brand</title>
+            <title>Batteries</title>
             <link rel='stylesheet' href='/public/style.css'/>
             </head>
             <body>
@@ -27,6 +27,46 @@ app.get('/', async(req, res, next) => {
                             </a>
                         </li>
                    `).join('')}
+                </ul>
+            </body>
+        </html>`);
+    }
+    catch(error) {
+        next(error)
+    };
+});
+
+app.get('/brands/:id', async(req, res, next) => {
+    try {
+        // let pgResponse = await client.query('SELECT * FROM brand WHERE id=$1;', [req.params.id]);
+        // const brand = pgResponse.rows[0];
+        // pgResponse = await client.query('SELECT * FROM chemistry WHERE chemical_id=$1;', [req.params.id]);
+        // const chemicals = pgResponse.rows;
+        
+        // Next provides the same functionality as 'let pgResponse...'
+        const promises = [
+            client.query('SELECT * FROM brand WHERE id=$1;', [req.params.id]),
+            client.query('SELECT * FROM chemistry WHERE chemical_id=$1;', [req.params.id]) 
+        ];
+        const [brandsResponse, chemicalsResponse] = await Promise.all(promises);
+        const brand = brandsResponse.rows[0];
+        const chemicals = chemicalsResponse.rows;
+
+        res.send(`
+        <html>
+            <head>
+            <title>Batteries brand</title>
+            <link rel='stylesheet' href='/public/style.css'/>
+            </head>
+            <body>
+                <h1>Batteries</h1>
+                <h3><a href='/'>Brands</a> (${brand.name})</h3>
+                <ul>
+                ${chemicals.map(chemical => `
+                    <li>
+                        ${chemical.chem}
+                    </li>
+                `).join('')}
                 </ul>
             </body>
         </html>`);

@@ -14,15 +14,15 @@ const syncAndSeed = async () => {
         CREATE TABLE chemistry (
             id INTEGER PRIMARY KEY,
             chem VARCHAR(100) NOT NULL,
-            brand_id INTEGER REFERENCES brand(id)
+            chemical_id INTEGER REFERENCES brand(id)
         );
 
         INSERT INTO brand(id, name) VALUES(1, 'Duracell');
         INSERT INTO brand(id, name) VALUES(2, 'Energizer');
         INSERT INTO brand(id, name) VALUES(3, 'Panasonic');
-        INSERT INTO chemistry(id, chem, brand_id) VALUES(1, 'Lithium', 1);
-        INSERT INTO chemistry(id, chem, brand_id) VALUES(2, 'NiMH', 2);
-        INSERT INTO chemistry(id, chem, brand_id) VALUES(3, 'Alkaline', 3);
+        INSERT INTO chemistry(id, chem, chemical_id) VALUES(1, 'Lithium', 1);
+        INSERT INTO chemistry(id, chem, chemical_id) VALUES(2, 'NiMH', 2);
+        INSERT INTO chemistry(id, chem, chemical_id) VALUES(3, 'Alkaline', 3);
     `;
 
     await client.query(SQL);
