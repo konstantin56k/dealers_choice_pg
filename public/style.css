@@ -1,5 +1,5 @@
 body {
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: Noto Sans, sans-serif;
 }
 
 li {
@@ -8,5 +8,5 @@ li {
 
 a {
     text-decoration: none;
-    color: rgb(0, 102, 71);
+    color:black;
 }

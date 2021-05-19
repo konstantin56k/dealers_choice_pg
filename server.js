@@ -1,39 +1,49 @@
-const pg = require('pg')
+const { client, syncAndSeed} = require('./db');
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000;
+const path = require('path');
 
-const client = new pg.Client('postgress://localhost/batteries_db');
+app.use('/public', express.static(path.join(__dirname, 'public')))
 
-const syncAndSeed = async () => {
-    const SQL = `
-        DROP TABLE IF EXISTS chemistry;
-        DROP TABLE IF EXISTS brand;
+app.get('/', async(req, res, next) => {
+    try {
+        const pgResponse = await client.query('SELECT * FROM brand;');
+        const brands = pgResponse.rows;
+        res.send(`
+        <html>
+            <head>
+            <title>Batteries brand</title>
+            <link rel='stylesheet' href='/public/style.css'/>
+            </head>
+            <body>
+                <h1>Batteries</h1>
+                <h3>Brands</h3>
+                <ul>
+                   ${brands.map(brand => `
+                        <li>
+                            <a href='/brands/${brand.id}'>
+                            ${brand.name}
+                            </a>
+                        </li>
+                   `).join('')}
+                </ul>
+            </body>
+        </html>`);
+    }
+    catch(error) {
+        next(error)
+    };
+});
 
-        CREATE TABLE brand (
-            id INTEGER PRIMARY KEY,
-            name VARCHAR(100) NOT NULL
-        );
-
-        CREATE TABLE chemistry (
-            id INTEGER PRIMARY KEY,
-            chem VARCHAR(100) NOT NULL,
-            brand_id INTEGER REFERENCES brand(id)
-        );
-
-        INSERT INTO brand(id, name) VALUES(1, 'Duracell');
-        INSERT INTO brand(id, name) VALUES(2, 'Energizer');
-        INSERT INTO brand(id, name) VALUES(3, 'Panasonic');
-        INSERT INTO chemistry(id, chem, brand_id) VALUES(1, 'Lithium', 1);
-        INSERT INTO chemistry(id, chem, brand_id) VALUES(2, 'NiMH', 2);
-        INSERT INTO chemistry(id, chem, brand_id) VALUES(3, 'Alkaline', 3);
-    `;
-
-    await client.query(SQL);
-};
-
-const setUp = async () => {
+const init = async () => {
     try {
         await client.connect();
         await syncAndSeed();
-        console.log('connected to db')
+        console.log('connected to db');
+        await app.listen(port, () => {
+            console.log(`listenning on port ${port}`)
+        });
     }
     catch (error) {
         console.log(error)
@@ -41,7 +51,7 @@ const setUp = async () => {
 
 }
 
-setUp();
+init();
 
 
 
